@@ -476,10 +476,10 @@ std::shared_ptr<module_info> fs_module_vfs::load_module(module_id const & id, bo
 
     std::string lean_src;
     optional<unsigned> src_hash = {};
-    if (file_exists(lean_fname)) {
-        lean_src = read_file(lean_fname);
-        src_hash = some<unsigned>(hash_data(remove_cr(lean_src)));
-    }
+    try {
+	lean_src = read_file(lean_fname);
+	src_hash = some<unsigned>(hash_data(remove_cr(lean_src)));
+    } catch (file_not_found_exception&) {}
 
     try {
         auto olean_fname = olean_of_lean(lean_fname);
