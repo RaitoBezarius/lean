@@ -40,7 +40,7 @@ if(${EMSCRIPTEN})
     add_dependencies(lean_js lean_js_library)
     set_target_properties(lean_js PROPERTIES COMPILE_FLAGS --bind -s NO_EXIT_RUNTIME=1)
 
-    set(LEAN_JS_OPTS "-s 'EXTRA_EXPORTED_RUNTIME_METHODS=[\"FS\"]'")
+    set(LEAN_JS_OPTS "-s 'EXPORTED_RUNTIME_METHODS=[\"FS\", \"PATH\", \"ERRNO_CODES\"]'")
 
     add_executable(lean_js_wasm lean_js.cpp lean_js_new.cpp server.cpp)
     target_link_libraries(lean_js_wasm leanstatic)
