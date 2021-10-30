@@ -33,6 +33,10 @@ Author: Leonardo de Moura
 #include "library/module_mgr.h"
 #include "library/library_task_builder.h"
 
+#if LEAN_EMSCRIPTEN
+#include <emscripten.h>
+#endif
+
 /*
 Missing features: non monotonic modifications in .olean files
 
@@ -617,8 +621,14 @@ optional<unsigned> src_hash_if_is_candidate_olean(std::string const & file_name)
         return {};
     d1 >> version;
 #ifndef LEAN_IGNORE_OLEAN_VERSION
-    if (version != get_version_string())
+    if (version != get_version_string()) {
+	#ifdef LEAN_EMSCRIPTEN
+	    emscripten_log(EM_LOG_NO_PATHS,
+			    "%s olean is not compatible with current Lean version (olean ver: %s, current ver: %s)",
+			    file_name.c_str(), version.c_str(), get_version_string().c_str());
+	#endif
         return {};
+    }
 #endif
     unsigned olean_src_hash;
     d1 >> olean_src_hash;
@@ -626,6 +636,7 @@ optional<unsigned> src_hash_if_is_candidate_olean(std::string const & file_name)
 }
 
 olean_data parse_olean(std::istream & in, std::string const & file_name, bool check_hash) {
+
     std::vector<module_name> imports;
     bool uses_sorry;
 
